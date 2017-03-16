@@ -1,10 +1,10 @@
 
-class HomeController {
-  constructor($scope, HomeService) {
+class GoalListController {
+  constructor($scope, GoalListService) {
     this.scope = $scope;
     this.fs = fs;
     this.goals = [];
-    this.service = HomeService;
+    this.service = GoalListService;
   }
 
   onInit() {
@@ -20,6 +20,6 @@ class HomeController {
 
 }
 
-HomeController.$inject = ['$scope', 'HomeService'];
+GoalListController.$inject = ['$scope', 'GoalListService'];
 
-export default HomeController;
+export default GoalListController;
