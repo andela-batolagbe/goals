@@ -37,9 +37,7 @@ app.post('/create', (req, res) => {
   const goals = fs.readFileSync(__dirname + '/goals.json');
   const goalList = JSON.parse(goals);
   goalList.push(data);
-  console.log(goalList);
   fs.writeFile(__dirname + '/goals.json', JSON.stringify(goalList), (err, done) => {
-    console.log(err, done);
     if (err) {
       return res.status(400).send({
         message: "Error adding goal, kinldy try again",

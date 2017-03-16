@@ -25,7 +25,18 @@ class HomeController {
     this.$onInit = () => {
       this.service.getGoals()
         .then((data) => {
-          this.goals = data;
+
+          this.goals = data.sort((a, b) => {
+            let first = a.priority.value;
+            let second = b.priority.value;
+            if (first < second) {
+              return -1;
+            }
+            if (first > second) {
+              return 1;
+            }
+            return 0;
+          });
         })
         .catch((err) => {
           console.log(err);
