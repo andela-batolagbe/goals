@@ -1,21 +1,22 @@
 'use strict';
 
-import gulp     from 'gulp';
-import webpack  from 'webpack';
-import path     from 'path';
-import sync     from 'run-sequence';
-import rename   from 'gulp-rename';
+import gulp from 'gulp';
+import webpack from 'webpack';
+import path from 'path';
+import sync from 'run-sequence';
+import rename from 'gulp-rename';
 import template from 'gulp-template';
-import fs       from 'fs';
-import yargs    from 'yargs';
-import lodash   from 'lodash';
-import gutil    from 'gulp-util';
-import serve    from 'browser-sync';
-import del      from 'del';
+import fs from 'fs';
+import yargs from 'yargs';
+import lodash from 'lodash';
+import gutil from 'gulp-util';
+import serve from 'browser-sync';
+import babel    from 'gulp-babel';
+import del from 'del';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
-import colorsSupported      from 'supports-color';
-import historyApiFallback   from 'connect-history-api-fallback';
+import colorsSupported from 'supports-color';
+import historyApiFallback from 'connect-history-api-fallback';
 
 let root = 'client';
 
@@ -36,10 +37,14 @@ let paths = {
     resolveToApp('**/*.html'),
     path.join(root, 'index.html')
   ],
+  goals: [
+    path.join(__dirname + '/client/goals.json')
+  ],
   entry: [
     'babel-polyfill',
     path.join(__dirname, root, 'app/app.js')
   ],
+  server: ['server.js'],
   output: root,
   blankTemplates: path.join(__dirname, 'generator', 'component/**/*.**'),
   dest: path.join(__dirname, 'dist')
@@ -51,7 +56,7 @@ gulp.task('webpack', ['clean'], (cb) => {
   config.entry.app = paths.entry;
 
   webpack(config, (err, stats) => {
-    if(err)  {
+    if (err) {
       throw new gutil.PluginError("webpack", err);
     }
 
@@ -64,6 +69,12 @@ gulp.task('webpack', ['clean'], (cb) => {
     cb();
   });
 });
+
+gulp.task('copy-goals', () =>
+  gulp.src(paths.goals)
+  .pipe(gulp.dest(paths.dest))
+);
+
 
 gulp.task('serve', () => {
   const config = require('./webpack.dev.config');
@@ -79,7 +90,7 @@ gulp.task('serve', () => {
   serve({
     port: process.env.PORT || 3000,
     open: false,
-    server: {baseDir: root},
+    server: { baseDir: root },
     middleware: [
       historyApiFallback(),
       webpackDevMiddleware(compiler, {
@@ -95,25 +106,24 @@ gulp.task('serve', () => {
   });
 });
 
-gulp.task('watch', ['serve']);
+// use webpack.config.js to build modules
+gulp.task('bundle', ['clean'], (cb) => {
+  const config = require('./webpack.dist.config');
+  config.entry.app = paths.entry;
 
-gulp.task('component', () => {
-  const cap = (val) => {
-    return val.charAt(0).toUpperCase() + val.slice(1);
-  };
-  const name = yargs.argv.name;
-  const parentPath = yargs.argv.parent || '';
-  const destPath = path.join(resolveToComponents(), parentPath, name);
+  webpack(config, (err, stats) => {
+    if(err)  {
+      throw new gutil.PluginError("webpack", err);
+    }
 
-  return gulp.src(paths.blankTemplates)
-    .pipe(template({
-      name: name,
-      upCaseName: cap(name)
-    }))
-    .pipe(rename((path) => {
-      path.basename = path.basename.replace('temp', name);
-    }))
-    .pipe(gulp.dest(destPath));
+    gutil.log("[build]", stats.toString({
+      colors: colorsSupported,
+      chunks: false,
+      errorDetails: true
+    }));
+
+    cb();
+  });
 });
 
 gulp.task('clean', (cb) => {
@@ -122,5 +132,20 @@ gulp.task('clean', (cb) => {
     cb();
   })
 });
+
+
+gulp.task('server', () =>
+  gulp.src(paths.server)
+  .pipe(babel({
+    presets: ['es2015', 'stage-0']
+  }))
+  .pipe(gulp.dest(paths.dest))
+)
+
+gulp.task('production', (cb) =>
+  sync('bundle', 'server', 'copy-goals', cb)
+);
+
+gulp.task('watch', ['serve']);
 
 gulp.task('default', ['watch']);
