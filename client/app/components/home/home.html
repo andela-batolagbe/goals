@@ -1,6 +1,7 @@
 <header>
   <div class="navbar">
     <h4 class="logo">GOALS</h4>
+    <button class="add-goal" ng-click="$ctrl.toggleAdd()">Add New Goal</button>
   </div>
 </header>
 <main>
@@ -9,10 +10,24 @@
     <div class="goals" ng-repeat="goal in $ctrl.goals">
       <h5 class="goal-title">{{goal.title}}</h5>
       <span class="goal-description">{{goal.description}}</span> <br/>
+      <span class="goal-description"><span>Priority:</span> {{goal.priority.name}}</span> <br/>
       <div class="item-wrapper">
         <span class="goal-item-left"><span>By: </span>{{goal.creator}}</span>
         <span class="goal-item-right"><span>Date Created: </span>{{goal.dateCreated}}</span>
       </div>
     </div>
+  </div>
+  <div class="addForm" ng-if="$ctrl.showAddForm">
+    <form>
+      <input type="text" placeholder="Title" ng-model="$ctrl.newGoal.title">
+      <input type="text" placeholder="Description" ng-model="$ctrl.newGoal.description">
+      <input type="text" placeholder="Creator" ng-model="$ctrl.newGoal.creator">
+      <select ng-model="$ctrl.newGoal.priority">
+      <label> Priority</label>
+       <option ng-repeat="level in $ctrl.priority" value="{{level}}">{{level.name}}</option>
+      </select>
+      <button ng-click="$ctrl.create()">Create</button>
+      <button ng-click="$ctrl.toggleAdd()">Cancel</button>
+    </form>
   </div>
 </main>

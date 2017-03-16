@@ -9,6 +9,17 @@
   margin-left: 20px;
 }
 
+.add-goal {
+  height: 50px;
+  margin-top: 5px;
+  border: #ffffff 1px solid;
+  margin-left: 40px;
+  background-color: #3b5998;
+  color: #ffffff;
+  padding: 5px;
+  z-index: 2
+}
+
 .goal-list {
   padding: 20px;
   margin: 100px auto 0 auto;
@@ -25,6 +36,7 @@
   border: #3b5998 1px solid;
   height: 100px;
   padding: 10px;
+  margin-bottom: 20px;
 }
 
 .goal-title {
@@ -36,8 +48,9 @@
   font-size: 16px;
   float: left;
 }
+
 .item-wrapper {
-   padding-top: 10px;
+  padding-top: 10px;
 }
 
 .goal-item-right {
