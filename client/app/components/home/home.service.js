@@ -1,24 +1,41 @@
 
 class HomeService {
-  constructor($http, $q) {
-    this.http = $http;
-    this.q = $q;
+  constructor($q, $http) {
+    this.$q = $q;
+    this.$http = $http;
   }
 
   getGoals() {
-    this.q((resolve, reject) => {
-      this.http({
-        method: 'GET',
-        url: '../../../goals.json'
-      }, (success) => {
-        resolve(success);
-      },
-      (err) => {
-        reject(err);
+    return this.$q((resolve, reject) => {
+      this.$http({
+        url: '../../../goals.json',
+        method: 'GET'
       })
+      .then((response) => {
+        resolve(response.data);
+        },
+        (response) => {
+          reject(response.data);
+      });
     })
   }
-}
+  create(data) {
+    return this.$q((resolve, reject) => {
+      this.$http({
+        url: '/create',
+        method: 'POST',
+        data: { goal: data }
+      })
+      .then((response) => {
+        resolve(response.data);
+        },
+        (response) => {
+          reject(response.data);
+      });
+    })
+  }
+};
 
 HomeService.$inject = ['$q', '$http'];
+
 export default HomeService;

@@ -6,6 +6,10 @@
   "dependencies": {
     "angular": "^1.5.0",
     "angular-ui-router": "^1.0.0-beta.1",
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "fs-extra": "^2.1.1",
+    "gulp-babel": "^6.1.2",
     "normalize.css": "^3.0.3"
   },
   "devDependencies": {
@@ -55,7 +59,8 @@
     "build": "gulp webpack",
     "component": "gulp component",
     "serve": "gulp serve",
-    "start": "gulp serve",
+    "production": "gulp production",
+    "start": "npm run production && node dist/server.js",
     "test": "karma start",
     "watch": "gulp serve",
     "webpack": "gulp webpack"
